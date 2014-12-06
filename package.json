@@ -1,0 +1,22 @@
+{
+  "name": "retos_cpp",
+  "version": "0.0.0",
+  "description": "",
+  "main": "create.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xgbuils/retos-c_cpp-foros-del-web.git"
+  },
+  "author": "Xavier Garcia Buils",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xgbuils/retos-c_cpp-foros-del-web/issues"
+  },
+  "homepage": "https://github.com/xgbuils/retos-c_cpp-foros-del-web",
+  "dependencies": {
+    "glob": "^4.3.1"
+  }
+}

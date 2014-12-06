@@ -1,3 +1,4 @@
-*/*/leosansan/*
+node_modules/
 *.o
 *~
+*/tester/*.h
