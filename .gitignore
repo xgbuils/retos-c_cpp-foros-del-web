@@ -1,4 +1,5 @@
 node_modules/
 *.o
 *~
+challenges/*/participantes/*/*/src/test*.c
 challenges/*/tester/*.h

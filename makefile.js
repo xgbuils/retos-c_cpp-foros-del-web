@@ -57,6 +57,19 @@ function createUserTest (user_test_c, test_name, callback) {
     });
 }
 
+function remove(files, callback) {
+    async.each(files, function(file, end) {
+        fs.exists(file, function (exists) {
+            fs.unlink(file, function (err) {
+                console.log(file + ' removed')
+                end()
+            })
+        })
+    }, function (err) {
+        callback()
+    })
+}
+
 function compile(target, dependencies, config, callback) {
     fs.readFile(config, 'utf8', function (err, content) {
         if (err) throw err;
@@ -76,16 +89,13 @@ function compile(target, dependencies, config, callback) {
 module.exports = function (jMake) {
     var source_files = []
     var bin_files = []
+    var clean_files = []
     getChallenges(undefined, function (err, challenges) {
         async.each(challenges, function (challenge, endChallenge) {
             var test_dir = path.join(PATH_CHALLENGES, challenge, PATH_TESTS)
             getTests(challenge, undefined, function (err, tests) {
                 var test_paths = tests.map(function (test) {
                     return path.join(test_dir, test + '.h')
-                })
-                //console.log(tests + 'vjwehgqwjhrgqjhg')
-                jMake.register('all', test_paths, function () {
-                    console.log('holaaa')
                 })
 
                 //console.log(tests)
@@ -107,6 +117,7 @@ module.exports = function (jMake) {
                         var config = path.join(test_dir, test + '.json')
                         source_files.push(test_h)
                         bin_files.push(test_o)
+                        clean_files.push(test_h, test_o)
                         
                         jMake.register(test_o, [test_c], function (test_o, test_c) {
                             compile(test_o, [test_c], config, this)
@@ -128,6 +139,7 @@ module.exports = function (jMake) {
                                     
                                     source_files.push(user_test_c)
                                     bin_files.push(user_test)
+                                    clean_files.push(user_test_c, user_test, user_o)
 
                                     jMake.register(user_o, [user_c], function (user_o, user_c) {
                                         compile(user_o, [user_c], config, this)
@@ -160,9 +172,13 @@ module.exports = function (jMake) {
                 throw new Error('error each')
             } else {
                 console.log(bin_files)
-                jMake.register('source_files', source_files, function(){})
-                jMake.register('bin_files', bin_files, function(){})
-                jMake.target('bin_files')
+                jMake.register('src', source_files, function(){})
+                jMake.register('bin', bin_files, function(){})
+                jMake.register('clean', [], function(){
+                    console.log('estic borrant')
+                    remove(clean_files, this)
+                })
+                jMake.target('bin')
                 jMake.emitter.emit('run')
             }
         })

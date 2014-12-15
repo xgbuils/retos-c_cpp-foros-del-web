@@ -28,11 +28,31 @@ var jMake = {
         jMake.__rules++;
     },
     run: function(emitter) {
+        console.log('target: ' + jMake.__target)
         var circularPrevent = {}
         //var trace = [jMake.__target]
         circularPrevent[jMake.__target] = true
 
         function listen(target, parent_emitter) {
+            var action = function() {
+                target.action.apply(
+                    function(err) {
+                        //console.log(target_name + ' emitting')
+                        parent_emitter.emit('file', target.name, new Date())
+                    },
+                    //parent_emitter,
+                    [target.name].concat(target.dependencies)
+                )
+            }
+
+            console.log('listen: ' + target.name)
+            console.log(target.exists, target.dependencies.length)
+            if (!target.exists && target.dependencies.length === 0) {
+                console.log('eoe')
+                action()
+            }
+
+            
             target.emitter.on('file', function (file_name, file_time) {
             	//console.log(target.name + ' receiving ' + file_name )
                 ++target.n
@@ -46,14 +66,15 @@ var jMake = {
                 	if (target.modify) {
                 		console.log(target.name + ' updating')
                         //console.log(target.name + ' updated ' + target.n + ' >= ' + target.dependencies.length)
-                        target.action.apply(
+                        action()
+                        /*target.action.apply(
                             function(err) {
                                 //console.log(target_name + ' emitting')
                                 parent_emitter.emit('file', target.name, new Date())
                             },
                             //parent_emitter,
                             [target.name].concat(target.dependencies)
-                        )
+                        )*/
                     } else {
                     	console.log(target.name + ' no changes')
                     	parent_emitter.emit('file', target.name, target.time)
@@ -63,7 +84,7 @@ var jMake = {
         }
 
         function recursive (target_name, parent_emitter) {
-        	//console.log('eiii', target_name)
+        	console.log('eiii', target_name)
             fs.exists(target_name, function (exists) {
                 var target = jMake.__register[target_name]
                 if (exists) {
@@ -76,6 +97,7 @@ var jMake = {
                             target.name    = target_name
                             target.time    = stats.mtime
                             target.n       = 0
+                            target.exists  = true
 
                             listen(target, parent_emitter)
 
@@ -102,6 +124,7 @@ var jMake = {
                         target.name    = target_name
                         target.time    = undefined
                         target.n       = 0
+                        target.exists  = false
 
                         listen(target, parent_emitter)
 
@@ -123,9 +146,15 @@ var jMake = {
     }
 }
 
+var target = process.argv[2]
+console.log('arg: ' + target)
+
 fs.exists('makefile.js', function (exists) {
     if (exists) {
+        
         jMake.emitter.on('run', function() {
+            if (jMake.__register[target])
+                jMake.target(target)
             jMake.run()
         })
         var makefile = require('./makefile')
