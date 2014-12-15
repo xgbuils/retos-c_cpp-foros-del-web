@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/xgbuils/retos-c_cpp-foros-del-web",
   "dependencies": {
+    "async": "^0.9.0",
     "glob": "^4.3.1"
   }
 }
