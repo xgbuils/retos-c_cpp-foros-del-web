@@ -1,3 +1,7 @@
+// Autor: leosansan
+// Fecha: 05/12/2014, 02:06
+// Enlace: http://www.forosdelweb.com/f96/petando-pila-problemas-retos-usando-recursividad-1113701/index3.html#post4660539
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>

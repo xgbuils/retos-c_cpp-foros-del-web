@@ -1,4 +1,8 @@
-#include<stdio.h>
+// Autor: leosansan
+// Fecha: 10/12/2014 17:23
+// Enlace: http://www.forosdelweb.com/f96/petando-pila-problemas-retos-usando-recursividad-1113701/index4.html#post4661962
+
+#include <stdio.h>
 #include <math.h>
  
 int DigitosNumero ( int digitosNumero [ 10 ], int numero , int flag ) {
