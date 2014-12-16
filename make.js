@@ -14,6 +14,7 @@ var jMake = {
         if (jMake.__rules === 0) {
             jMake.__target = target
         }
+        //console.log(target)
         if (jMake.__register[target]) {
             throw new Error('target redeclared')
         }
@@ -28,7 +29,7 @@ var jMake = {
         jMake.__rules++;
     },
     run: function(emitter) {
-        console.log('target: ' + jMake.__target)
+        //console.log('target: ' + jMake.__target)
         var circularPrevent = {}
         //var trace = [jMake.__target]
         circularPrevent[jMake.__target] = true
@@ -45,10 +46,10 @@ var jMake = {
                 )
             }
 
-            console.log('listen: ' + target.name)
-            console.log(target.exists, target.dependencies.length)
+            //console.log('listen: ' + target.name)
+            //console.log(target.exists, target.dependencies.length)
             if (!target.exists && target.dependencies.length === 0) {
-                console.log('eoe')
+                //console.log('eoe')
                 action()
             }
 
@@ -84,7 +85,7 @@ var jMake = {
         }
 
         function recursive (target_name, parent_emitter) {
-        	console.log('eiii', target_name)
+        	//console.log('eiii', target_name)
             fs.exists(target_name, function (exists) {
                 var target = jMake.__register[target_name]
                 if (exists) {
