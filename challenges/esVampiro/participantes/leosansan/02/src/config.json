@@ -1,9 +1,0 @@
-{
-	"vars": {
-		"CC": "gcc -O2",
-		"CFLAGS": "-std=c99 -lm -pg"
-	},
-	"tags": [
-	    "recursivo"
-	]
-}

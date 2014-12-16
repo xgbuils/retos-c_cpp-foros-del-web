@@ -2,8 +2,8 @@ var glob = require('glob')
 var path = require('path')
 var fs = require('fs')
 
-var PATH_TESTS = 'tester/'
-var PATH_USERS = 'participantes/'
+var PATH_TESTS = 'tests/'
+var PATH_USERS = 'users/'
 var PATH_CHALLENGES = 'challenges/'
 var PATH_BINARIES = 'bin/'
 

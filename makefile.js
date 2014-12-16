@@ -40,7 +40,7 @@ function createHeader (test_h, funct_name, callback) {
 
 function createUserTest (user_test_c, test_name, callback) {
     var content = ''
-    content += '#include "../../../../tester/' + test_name + '.h"\n'
+    content += '#include "../../../../' + PATH_TESTS + test_name + '.h"\n'
     content += 'int main (void) {\n'
     content += '    ' + test_name + '();\n'
     content += '    return 0;\n'
