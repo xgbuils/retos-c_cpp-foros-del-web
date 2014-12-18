@@ -1,5 +1,6 @@
 var fs     = require('fs')
 var events = require('events')
+var scripts = require('./scripts/scripts')
 var EventEmitter = events.EventEmitter
 
 
@@ -28,7 +29,7 @@ var jMake = {
 
         jMake.__rules++;
     },
-    run: function(emitter) {
+    run: function(options) {
         //console.log('target: ' + jMake.__target)
         var circularPrevent = {}
         //var trace = [jMake.__target]
@@ -148,17 +149,20 @@ var jMake = {
 }
 
 var target = process.argv[2]
-console.log('arg: ' + target)
+var options = scripts.getParamOptions(process.argv)
 
 fs.exists('makefile.js', function (exists) {
     if (exists) {
         
         jMake.emitter.on('run', function() {
-            if (jMake.__register[target])
+            var n = 2
+            if (jMake.__register[target]) {
                 jMake.target(target)
+                n = 3
+            }
             jMake.run()
         })
         var makefile = require('./makefile')
-        makefile(jMake)
+        makefile(jMake, options)
     }
 })

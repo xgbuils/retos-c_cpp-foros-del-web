@@ -132,14 +132,33 @@ function compile(target, dependencies, config, callback) {
             callback()
         })
     })
-} 
+}
 
-module.exports = function (jMake) {
+function link(target, dependencies, config, callback) {
+    fs.readFile(config, 'utf8', function (err, content) {
+        if (err) throw err;
+        var config = JSON.parse(content).vars;
+        var flag = ' '
+        if (/\.o$/.test(target)) {
+            flag = ' -c '
+        }
+        var cmd = 'g++ -o ' + target + flag + dependencies.join(' ') + ' ' + config.CFLAGS
+        console.log(cmd)
+        exec(cmd, function(err) {
+            if (err) throw new Error(err.toString())
+            callback()
+        })
+    })
+}
+
+module.exports = function (jMake, options) {
+    console.log(options)
     var source_files = []
     var obj_files = []
     var bin_files = []
     var clean_files = []
-    getChallenges(undefined, function (err, challenges) {
+    getChallenges(options['-c'], function (err, challenges) {
+        console.log(challenges)
         async.each(challenges, function (challenge, endChallenge) {
             var test_dir = path.join(PATH_CHALLENGES, challenge, PATH_TESTS)
 
@@ -152,9 +171,9 @@ module.exports = function (jMake) {
                             getVersions(challenge, user, undefined, function (err, versions) {
                                 versions.forEach(function (version) {
                                     var user_test_dir = path.join(PATH_CHALLENGES, challenge, PATH_USERS, user, version)
-                                    var user_c      = path.join(user_test_dir, 'src', user + version + '.c')
-                                    var user_o      = path.join(user_test_dir, 'bin', user + version + '.o')
-                                    var config      = path.join(user_test_dir, 'src', 'config.json')
+                                    var user_c        = path.join(user_test_dir, 'src', user + version + '.c')
+                                    var user_o        = path.join(user_test_dir, 'bin', user + version + '.o')
+                                    var config        = path.join(user_test_dir, 'src', 'config.json')
         
                                     obj_files.push(user_o)
                                     clean_files.push(user_o)
@@ -170,19 +189,19 @@ module.exports = function (jMake) {
                 }, 
                 function (callback) {
                     getTests(challenge, undefined, function (err, tests) {
-                        var test_paths = tests.map(function (test) {
+                        /*var test_paths = tests.map(function (test) {
                             return path.join(test_dir, test + '.h')
-                        })
+                        })*/
         
                         //console.log(tests)
-                        tests.forEach(function (test) {
+                        /*tests.forEach(function (test) {
                             var test_h = path.join(test_dir, test + '.h')
                             var test_c = path.join(test_dir, test + '.c')
                             //console.log(test_h, '<-', test_c)
                             jMake.register(test_h, [test_c], function (test_h, test_c) {
                                 createHeader(test_h, test, this)
                             })
-                        })
+                        })*/
         
                         getUsers(challenge, undefined, function (err, users) {
                             async.each(tests, function (test, endTest) {
@@ -192,9 +211,8 @@ module.exports = function (jMake) {
                                 var test_c = path.join(test_dir, test + '.c')
                                 var test_o = path.join(test_dir, test + '.o')
                                 var config = path.join(test_dir, test + '.json')
-                                source_files.push(test_h)
                                 obj_files.push(test_o)
-                                clean_files.push(test_h, test_o)
+                                clean_files.push(test_o)
                                 
                                 jMake.register(test_o, [test_c], function (test_o, test_c) {
                                     compile(test_o, [test_c], config, this)
@@ -210,23 +228,22 @@ module.exports = function (jMake) {
                                             var user_o      = path.join(user_test_dir, 'bin', user + version + '.o')
                                             var config      = path.join(user_test_dir, 'src', 'config.json')
         
-                                            var user_test_c = path.join(user_test_dir, 'src', test + '.c')
+                                            //var user_test_c = path.join(user_test_dir, 'src', test + '.c')
                                             //var user_test_o = path.join(user_test_dir, 'bin', test + '.o')
                                             var user_test   = path.join(user_test_dir, 'bin', test)
                                             
-                                            source_files.push(user_test_c)
                                             bin_files.push(user_test)
-                                            clean_files.push(user_test_c, user_test)
+                                            clean_files.push(user_test)
         
-                                            ;(function (test) {
+                                            /*;(function (test) {
                                                 jMake.register(user_test_c, [test_h], function (user_test_c, test_h) {
                                                     console.log(test)
                                                     createUserTest(user_test_c, test, this)
                                                 })
-                                            }(test))
-                                            var dependencies = [user_test_c, user_o, test_o]
-                                            jMake.register(user_test, dependencies, function (user_test, user_test_c, user_o, test_o) {
-                                                compile(user_test, dependencies, config, this)
+                                            }(test))*/
+                                            var dependencies = [user_o, test_o]
+                                            jMake.register(user_test, dependencies, function (user_test, user_o, test_o) {
+                                                link(user_test, dependencies, config, this)
                                             })
                                         })
                                         endUser()

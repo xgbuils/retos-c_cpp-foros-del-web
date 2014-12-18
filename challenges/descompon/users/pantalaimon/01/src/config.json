@@ -1,0 +1,9 @@
+{
+	"vars": {
+		"CC": "g++ -O2",
+		"CFLAGS": "-std=c++0x"
+	},
+	"tags": [
+	    "recursivo"
+	]
+}

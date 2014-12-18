@@ -1,0 +1,1 @@
+void descompon(int a, int b, int ver);

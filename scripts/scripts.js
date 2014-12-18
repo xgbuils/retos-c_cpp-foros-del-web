@@ -10,12 +10,19 @@ var PATH_BINARIES = 'bin/'
 function getParamOptions(argv) {
     var options = {}
       , prop
-    argv = argv.slice(2)
-    
+
+    var n = 2
+
+    if (argv[2][0] !== '-') {
+        options.first = argv[2]
+        n = 3
+    }
+
+    argv = argv.slice(n)
+
+    var prop
     argv.forEach(function (e) {
-        if (e.substr(0, 2) === '--') {
-            options[e] = true
-        } else if (e[0] === '-') {
+        if (e[0] === '-') {
             prop = e;
             if (!options[prop]) {
                 options[prop] = []
@@ -25,22 +32,7 @@ function getParamOptions(argv) {
         }
     })
 
-    var returnOptions = {
-    	challenges: options['-c'],
-    	users: options['-u'],
-    	tests: options['-t'],
-    	versions: options['-v'],
-    	force: !!options['-f']
-    }
-
-    returnOptions.binfiles = options['--binfiles']
-    returnOptions.makefiles = returnOptions.binfiles || options['--makefiles']
-    returnOptions.testfiles = returnOptions.makefiles || options['--testfiles']
-    if (!returnOptions.testfiles) {
-        returnOptions.binfiles = returnOptions.makefiles = returnOptions.testfiles = true
-    }
-    
-    return returnOptions
+    return options
 
 }
 
